@@ -1,65 +1,148 @@
-/* Home.css */
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
+}
 
-/* Fade-in animation for text overlay */
-@keyframes fadeInText {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
+.container {
+  font-family: 'Arial', sans-serif;
+  background-color: #121212; /* Dark background for entire page */
+  color: #e0e0e0; /* Light text color for contrast */
+}
+
+/* Hero Section Styles */
+.hero-section {
+  min-height: 60vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+  animation: fadeIn 1.5s ease-in-out; /* Fade-in animation */
+  background-color: rgba(0, 0, 0, 0.5); /* Add dark overlay to background */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  /* Slide-in animation for floating container */
-  @keyframes slideIn {
-    0% {
-      transform: translate(-50%, 50%);
-      opacity: 0;
-    }
-    100% {
-      transform: translate(-50%, -50%);
-      opacity: 1;
-    }
+  to {
+    opacity: 1;
   }
-  
-  /* Fade-in animation for the 'Best Indian Hotel' section */
-  @keyframes fadeInContent {
-    0% {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #00bcd4; /* Cyan button color for contrast */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 1rem;
+  position: absolute;
+  bottom: 20px;
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.btn-primary:hover {
+  background-color: #0097a7; /* Darker cyan on hover */
+  color: white;
+  border: 1px solid #00bcd4;
+}
+
+/* Services Section Styles */
+.services-section {
+  padding: 3rem 1rem;
+  background: #1e1e1e; /* Dark background for services section */
+  animation: slideIn 1s ease-in-out; /* Slide-in animation */
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
   }
-  
-  /* Zoom-in animation for the image */
-  @keyframes zoomInImage {
-    0% {
-      transform: scale(0.9);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
-  /* Apply animations to the elements */
-  .carousel-caption {
-    animation: fadeInText 2s ease-out forwards; /* Text overlay fade-in */
+}
+
+.service-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.service {
+  background: #232323; /* Dark card background */
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for cards */
+  text-align: center;
+  transition: transform 0.3s ease; /* Smooth scale transition */
+  opacity: 0; /* Start with hidden opacity */
+  animation: fadeInUp 0.5s forwards; /* Fade-in-up animation */
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
   }
-  
-  .floating-container {
-    animation: slideIn 1s ease-out forwards; /* Floating container slide-in */
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
-  .best-indian-content {
-    animation: fadeInContent 2s ease-out forwards; /* Best Indian Hotel section fade-in */
+}
+
+/* Hover Effect for Service Cards */
+.service:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 1rem;
+    min-height: 50vh;
   }
-  
-  .image-zoom {
-    animation: zoomInImage 2s ease-out forwards; /* Zoom-in effect for image */
+
+  .btn-primary {
+    bottom: 10px;
+    padding: 0.4rem 0.8rem;
   }
-  
+
+  .services-section {
+    padding: 2rem 0.5rem;
+  }
+
+  .service {
+    width: 90%; /* Full width on smaller screens */
+    max-width: 400px; /* Maximum width */
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 0.5rem;
+    min-height: 40vh;
+  }
+
+  .btn-primary {
+    font-size: 0.8rem; /* Smaller button text */
+    bottom: 5px;
+  }
+
+  .service {
+    padding: 1rem; /* Less padding for smaller screens */
+  }
+}

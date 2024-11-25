@@ -1,0 +1,82 @@
+/* Global reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #000000;
+}
+
+/* App wrapper */
+.App {
+  text-align: center;
+  background-color: #121212; /* Dark background for the whole app */
+  color: #e0e0e0; /* Light text color */
+  font-family: 'Arial', sans-serif;
+}
+
+/* App logo */
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+/* Apply animation for the logo */
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+/* App header section */
+.App-header {
+  background-color: #000000; /* Slightly lighter background for the header */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: #e0e0e0; /* Light text for readability */
+  padding: 20px;
+}
+
+/* Link styling */
+.App-link {
+  color: #00bcd4; /* Cyan link color for contrast */
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+/* Hover effect for links */
+.App-link:hover {
+  color: #0097a7; /* Darker cyan when hovered */
+}
+
+/* Keyframe for rotating the logo */
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Optional: Dark theme button styling */
+button {
+  padding: 12px 20px;
+  background-color: #00bcd4; /* Cyan background */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 20px;
+}
+
+button:hover {
+  background-color: #0097a7; /* Darker cyan on hover */
+  transform: scale(1.05); /* Slight scale effect on hover */
+}
