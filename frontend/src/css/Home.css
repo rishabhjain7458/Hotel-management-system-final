@@ -1,0 +1,65 @@
+/* Home.css */
+
+/* Fade-in animation for text overlay */
+@keyframes fadeInText {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  /* Slide-in animation for floating container */
+  @keyframes slideIn {
+    0% {
+      transform: translate(-50%, 50%);
+      opacity: 0;
+    }
+    100% {
+      transform: translate(-50%, -50%);
+      opacity: 1;
+    }
+  }
+  
+  /* Fade-in animation for the 'Best Indian Hotel' section */
+  @keyframes fadeInContent {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Zoom-in animation for the image */
+  @keyframes zoomInImage {
+    0% {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Apply animations to the elements */
+  .carousel-caption {
+    animation: fadeInText 2s ease-out forwards; /* Text overlay fade-in */
+  }
+  
+  .floating-container {
+    animation: slideIn 1s ease-out forwards; /* Floating container slide-in */
+  }
+  
+  .best-indian-content {
+    animation: fadeInContent 2s ease-out forwards; /* Best Indian Hotel section fade-in */
+  }
+  
+  .image-zoom {
+    animation: zoomInImage 2s ease-out forwards; /* Zoom-in effect for image */
+  }
+  
