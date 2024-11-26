@@ -3,7 +3,17 @@ const User = require('./../Models/userModel'); // Ensure the path is correct
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const { OAuth2Client } = require('google-auth-library');
+
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// Gmail transporter setup
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
+    },
+});
 
 // Google Login Handler
 exports.googleLogin = async (req, res, next) => {
@@ -13,7 +23,7 @@ exports.googleLogin = async (req, res, next) => {
         // Verify the Google token
         const ticket = await client.verifyIdToken({
             idToken: token,
-            audience: process.env.GOOGLE_CLIENT_ID
+            audience: process.env.GOOGLE_CLIENT_ID,
         });
 
         const payload = ticket.getPayload();
@@ -27,49 +37,42 @@ exports.googleLogin = async (req, res, next) => {
                 email,
                 name,
                 password: 'google_oauth',
-                profilePicture: picture
+                profilePicture: picture,
             });
         }
 
         // Generate JWT
-        const jwtToken = jwt.sign({ id: user._id }, process.env.SECRET_STR, { expiresIn: process.env.LOGIN_EXPIRES });
+        const jwtToken = jwt.sign({ id: user._id }, process.env.SECRET_STR, {
+            expiresIn: process.env.LOGIN_EXPIRES,
+        });
 
         res.status(200).json({
             status: 'success',
             token: jwtToken,
-            user
+            user,
         });
     } catch (err) {
         res.status(401).json({
             status: 'fail',
-            message: 'Google authentication failed. Please try again.'
+            message: 'Google authentication failed. Please try again.',
         });
     }
 };
-
-// Create a transporter using environment variables
-const transporter = nodemailer.createTransport({
-    host: 'smtp-relay.brevo.com',
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.EMAIL_TEST,
-        pass: process.env.EMAIL_PASS
-    }
-});
 
 // Email sending logic for signup
 exports.signup = async (req, res, next) => {
     try {
         const newUser = await User.create(req.body);
 
-        const token = jwt.sign({ id: newUser._id }, process.env.SECRET_STR, { expiresIn: process.env.LOGIN_EXPIRES });
+        const token = jwt.sign({ id: newUser._id }, process.env.SECRET_STR, {
+            expiresIn: process.env.LOGIN_EXPIRES,
+        });
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: process.env.GMAIL_USER,
             to: newUser.email,
             subject: 'Welcome to Our Hotel Management System',
-            text: `Hi ${newUser.name},\n\nThank you for signing up. We are excited to have you onboard!`
+            text: `Hi ${newUser.name},\n\nThank you for signing up. We are excited to have you onboard!`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -81,7 +84,7 @@ exports.signup = async (req, res, next) => {
         res.status(201).json({
             status: 'success',
             token,
-            data: { user: newUser }
+            data: { user: newUser },
         });
     } catch (err) {
         next(err);
@@ -94,22 +97,24 @@ exports.login = async (req, res, next) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return next(new CustomError('Please enter email or password to login'));
+            return next(new Error('Please enter email or password to login'));
         }
 
         const user = await User.findOne({ email });
 
         if (!user || !(await user.comparePasswordInDb(password, user.password))) {
-            return next(new CustomError('Incorrect email or password', 400));
+            return next(new Error('Incorrect email or password'));
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.SECRET_STR, { expiresIn: process.env.LOGIN_EXPIRES });
+        const token = jwt.sign({ id: user._id }, process.env.SECRET_STR, {
+            expiresIn: process.env.LOGIN_EXPIRES,
+        });
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: process.env.GMAIL_USER,
             to: user.email,
             subject: 'Successful Login to Our Hotel Management System',
-            text: `Hi ${user.name},\n\nYou have successfully logged into our system. If this was not you, please contact support immediately.`
+            text: `Hi ${user.name},\n\nYou have successfully logged into our system. If this was not you, please contact support immediately.`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -121,7 +126,7 @@ exports.login = async (req, res, next) => {
         res.status(200).json({
             status: 'success',
             token,
-            user
+            user,
         });
     } catch (err) {
         next(err);
