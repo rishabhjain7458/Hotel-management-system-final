@@ -121,18 +121,34 @@ const RoomsPage = () => {
     setEditRoom(null); // Cancel editing
   };
 
-  const deleteRoom = async (roomId) => {
+  const deleteRoom = async (id) => {
     if (window.confirm('Are you sure you want to delete this room?')) {
       setActionLoading(true);
       try {
-        const response = await fetch(`http://localhost:2020/rooms/${roomId}`, {
+        const response = await fetch(`http://localhost:2020/rooms/${id}`, {
           method: 'DELETE',
         });
         if (!response.ok) throw new Error('Failed to delete room');
-
-        // Remove room from state
-        setRooms((prevRooms) => prevRooms.filter((room) => room._id !== roomId));
+        setRooms(rooms.filter((room) => room._id !== id)); // Remove room from state
         alert('Room deleted successfully.');
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setActionLoading(false);
+      }
+    }
+  };
+
+  const deleteAllRooms = async () => {
+    if (window.confirm('Are you sure you want to delete all rooms?')) {
+      setActionLoading(true);
+      try {
+        const response = await fetch('http://localhost:2020/rooms', {
+          method: 'DELETE',
+        });
+        if (!response.ok) throw new Error('Failed to delete all rooms');
+        setRooms([]); // Clear all rooms from state
+        alert('All rooms deleted successfully.');
       } catch (err) {
         setError(err.message);
       } finally {
@@ -175,9 +191,9 @@ const RoomsPage = () => {
       <form onSubmit={handleSubmit} className="add-room-form">
         <h3>{editRoom ? 'Edit Room' : 'Add New Room'}</h3>
         <input
-          type="text"
+          type="number"
           name="name"
-          placeholder="Room Name"
+          placeholder="Room Number"
           value={editRoom?.name || newRoom.name}
           onChange={handleChange}
           required
@@ -185,7 +201,7 @@ const RoomsPage = () => {
         <input
           type="number"
           name="price"
-          placeholder="Price"
+          placeholder="Price(per night)"
           value={editRoom?.price || newRoom.price}
           onChange={handleChange}
           required
@@ -193,7 +209,7 @@ const RoomsPage = () => {
         <input
           type="number"
           name="occupancy"
-          placeholder="Occupancy"
+          placeholder="Occupancy(Max)"
           value={editRoom?.occupancy || newRoom.occupancy}
           onChange={handleChange}
           required
@@ -233,6 +249,7 @@ const RoomsPage = () => {
         )}
       </form>
 
+      {/* Room List */}
       <div className="rooms-grid">
         {rooms.map((room) => (
           <div key={room._id} className="room-card">
@@ -250,6 +267,13 @@ const RoomsPage = () => {
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Delete All Rooms Button */}
+      <div className="delete-all">
+        <button onClick={deleteAllRooms} disabled={actionLoading}>
+          Delete All Rooms
+        </button>
       </div>
     </div>
   );

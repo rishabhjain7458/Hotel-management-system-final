@@ -87,14 +87,31 @@ const EventsPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setActionLoading(true);
+
+    // Validate if the date is in a valid format
+    if (isNaN(new Date(newEvent.date).getTime())) {
+      alert('Please select a valid date');
+      setActionLoading(false);
+      return;
+    }
+
+    // Ensure the date is in the correct format (YYYY-MM-DD)
+    const formattedDate = new Date(newEvent.date).toISOString().split('T')[0];  
+
+    const updatedEvent = {
+      ...newEvent,
+      date: formattedDate,
+    };
+
     try {
       const response = await fetch('http://localhost:2020/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newEvent),
+        body: JSON.stringify(updatedEvent),
       });
+
       if (!response.ok) {
         throw new Error('Failed to add new event');
       }
@@ -163,6 +180,11 @@ const EventsPage = () => {
     }
   };
 
+  // Sort upcoming events based on date
+  const sortedUpcomingEvents = events
+    .filter((event) => new Date(event.date) >= new Date())  // Filter future events
+    .sort((a, b) => new Date(a.date) - new Date(b.date));   // Sort by event date
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -221,7 +243,7 @@ const EventsPage = () => {
             required
           />
           <input
-            type="datetime-local"
+            type="date"
             name="date"
             value={newEvent.date}
             onChange={handleChange}
@@ -271,14 +293,17 @@ const EventsPage = () => {
       <div className="sidebar">
         <h3>Upcoming Events</h3>
         <ul>
-          {events.slice(0, 5).map((event) => (
-            <li key={event._id}>
-              <strong>{event.name}</strong> - {new Date(event.date).toLocaleDateString()}
-            </li>
-          ))}
+          {sortedUpcomingEvents.length > 0 ? (
+            sortedUpcomingEvents.slice(0, 5).map((event) => (
+              <li key={event._id}>
+                <p>{event.name}</p>
+                <p>{new Date(event.date).toLocaleDateString()}</p>
+              </li>
+            ))
+          ) : (
+            <p>No upcoming events.</p>
+          )}
         </ul>
-        <h3>Statistics</h3>
-        <p>Total Events: {events.length}</p>
       </div>
     </div>
   );

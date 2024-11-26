@@ -112,6 +112,7 @@ const Signup = () => {
             />
           </div>
           <button type="submit">Signup</button>
+          Already a user ? <a href="/login">Login</a>
         </form>
         {message && <p className="success-message">{message}</p>}
         {error && <p className="error-message">{error}</p>}

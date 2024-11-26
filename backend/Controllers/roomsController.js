@@ -149,42 +149,26 @@ exports.deleteAllRooms = async (req, res) => {
     }
 };
 
-// Update a room by ID
 exports.updateRoom = async (req, res) => {
     try {
-        // Validate if there is any update in the request body
-        if (Object.keys(req.body).length === 0) {
-            return res.status(400).json({
-                status: 'fail',
-                message: 'No data provided to update the room',
-            });
-        }
-
-        // Find the room by ID and update its details
-        const room = await Rooms.findByIdAndUpdate(req.params.id, req.body, {
-            new: true, // Return the updated document
-            runValidators: true, // Ensure validation rules are followed
-        });
-
-        if (!room) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'No room found with the specified ID',
-            });
-        }
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Room details updated successfully',
-            data: {
-                room,
-            },
-        });
+      const roomId = req.params.id;
+      const updateData = req.body; // The data sent in the request body to update the room
+  
+      // Find the room by ID and update it
+      const updatedRoom = await Rooms.findByIdAndUpdate(roomId, updateData, { new: true });
+  
+      if (!updatedRoom) {
+        return res.status(404).json({ message: 'Room not found' });
+      }
+  
+      // Return the updated room
+      res.status(200).json({
+        message: 'Room updated successfully',
+        data: { room: updatedRoom },
+      });
     } catch (err) {
-        res.status(400).json({
-            status: 'fail',
-            message: `Error updating room: ${err.message}`,
-        });
+      console.error('Error updating room:', err);
+      res.status(500).json({ message: 'Failed to update room details', error: err.message });
     }
-};
+  };
 
