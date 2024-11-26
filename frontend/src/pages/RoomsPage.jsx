@@ -13,13 +13,14 @@ const RoomsPage = () => {
     telephone: '',
     readyForCheckIn: false,
   });
+  const [editRoom, setEditRoom] = useState(null); // State for room being edited
   const [actionLoading, setActionLoading] = useState(false);
   const [filters, setFilters] = useState({
     sort: '',
     price: '',
   });
 
-  // Fetch rooms with filters applied
+  // Fetch rooms
   const fetchRooms = async (query = '') => {
     setLoading(true);
     try {
@@ -36,12 +37,10 @@ const RoomsPage = () => {
     }
   };
 
-  // Initial fetch without filters
   useEffect(() => {
     fetchRooms();
   }, []);
 
-  // Handle filter input changes
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
@@ -50,37 +49,22 @@ const RoomsPage = () => {
     }));
   };
 
-  // Apply filters
   const applyFilters = () => {
     const queryParams = [];
-
-    // Check if there's a price filter
-    if (filters.price) {
-      queryParams.push(`price[lte]=${filters.price}`);
-    }
-
-    // Check if there's a sort filter
-    if (filters.sort) {
-      queryParams.push(`sort=${filters.sort}`);
-    }
-
-    // Join the query parameters and fetch rooms
-    const queryString = queryParams.join('&');
-    fetchRooms(queryString);
+    if (filters.price) queryParams.push(`price[lte]=${filters.price}`);
+    if (filters.sort) queryParams.push(`sort=${filters.sort}`);
+    fetchRooms(queryParams.join('&'));
   };
 
-  // Reset filters
   const resetFilters = () => {
-    setFilters({
-      sort: '',
-      price: '',
-    });
-    fetchRooms(); // Fetch rooms without filters
+    setFilters({ sort: '', price: '' });
+    fetchRooms();
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setNewRoom((prev) => ({
+    const stateUpdater = editRoom ? setEditRoom : setNewRoom; // Handle both create and edit forms
+    stateUpdater((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
@@ -88,21 +72,31 @@ const RoomsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const url = editRoom ? `http://localhost:2020/rooms/${editRoom._id}` : 'http://localhost:2020/rooms';
+    const method = editRoom ? 'PATCH' : 'POST';
+    const body = JSON.stringify(editRoom || newRoom);
+
     setActionLoading(true);
     try {
-      const response = await fetch('http://localhost:2020/rooms', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newRoom),
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body,
       });
-      if (!response.ok) {
-        throw new Error('Failed to add new room');
-      }
+      if (!response.ok) throw new Error(`Failed to ${editRoom ? 'update' : 'add'} room`);
       const data = await response.json();
-      setRooms((prevRooms) => [...prevRooms, data.data.room]);
-      alert('Room added successfully.');
+
+      if (editRoom) {
+        // Update room in state
+        setRooms((prevRooms) =>
+          prevRooms.map((room) => (room._id === editRoom._id ? data.data.room : room))
+        );
+        alert('Room updated successfully.');
+      } else {
+        setRooms((prevRooms) => [...prevRooms, data.data.room]);
+        alert('Room added successfully.');
+      }
+
       setNewRoom({
         name: '',
         price: '',
@@ -111,75 +105,50 @@ const RoomsPage = () => {
         telephone: '',
         readyForCheckIn: false,
       });
+      setEditRoom(null); // Reset edit state
     } catch (err) {
       setError(err.message);
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const startEditing = (room) => {
+    setEditRoom(room); // Set the room to be edited
+  };
+
+  const cancelEditing = () => {
+    setEditRoom(null); // Cancel editing
   };
 
   const deleteRoom = async (roomId) => {
-    setActionLoading(true);
-    try {
-      const response = await fetch(`http://localhost:2020/rooms/${roomId}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete room');
+    if (window.confirm('Are you sure you want to delete this room?')) {
+      setActionLoading(true);
+      try {
+        const response = await fetch(`http://localhost:2020/rooms/${roomId}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) throw new Error('Failed to delete room');
+
+        // Remove room from state
+        setRooms((prevRooms) => prevRooms.filter((room) => room._id !== roomId));
+        alert('Room deleted successfully.');
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setActionLoading(false);
       }
-      setRooms((prevRooms) => prevRooms.filter((room) => room._id !== roomId));
-      alert('Room deleted successfully.');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setActionLoading(false);
     }
   };
 
-  const deleteAllRooms = async () => {
-    setActionLoading(true);
-    try {
-      const response = await fetch('http://localhost:2020/rooms', {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete all rooms');
-      }
-      setRooms([]);
-      alert('All rooms deleted successfully.');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const fetchRoomById = async (roomId) => {
-    try {
-      const response = await fetch(`http://localhost:2020/rooms/${roomId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch room');
-      }
-      const data = await response.json();
-      alert(`Room details: ${JSON.stringify(data.data.room)}`);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="rooms-container">
       <h2>Room Management</h2>
 
-      {/* Room Filter Form */}
+      {/* Filter Section */}
       <div className="filter-section">
         <h3>Filter and Sort Rooms</h3>
         <select name="sort" value={filters.sort} onChange={handleFilterChange}>
@@ -202,13 +171,14 @@ const RoomsPage = () => {
         </button>
       </div>
 
+      {/* Add or Edit Room Form */}
       <form onSubmit={handleSubmit} className="add-room-form">
-        <h3>Add New Room</h3>
+        <h3>{editRoom ? 'Edit Room' : 'Add New Room'}</h3>
         <input
           type="text"
           name="name"
           placeholder="Room Name"
-          value={newRoom.name}
+          value={editRoom?.name || newRoom.name}
           onChange={handleChange}
           required
         />
@@ -216,7 +186,7 @@ const RoomsPage = () => {
           type="number"
           name="price"
           placeholder="Price"
-          value={newRoom.price}
+          value={editRoom?.price || newRoom.price}
           onChange={handleChange}
           required
         />
@@ -224,7 +194,7 @@ const RoomsPage = () => {
           type="number"
           name="occupancy"
           placeholder="Occupancy"
-          value={newRoom.occupancy}
+          value={editRoom?.occupancy || newRoom.occupancy}
           onChange={handleChange}
           required
         />
@@ -232,7 +202,7 @@ const RoomsPage = () => {
           type="text"
           name="amenityFeature"
           placeholder="Amenities"
-          value={newRoom.amenityFeature}
+          value={editRoom?.amenityFeature || newRoom.amenityFeature}
           onChange={handleChange}
           required
         />
@@ -240,7 +210,7 @@ const RoomsPage = () => {
           type="text"
           name="telephone"
           placeholder="Telephone"
-          value={newRoom.telephone}
+          value={editRoom?.telephone || newRoom.telephone}
           onChange={handleChange}
           required
         />
@@ -249,43 +219,40 @@ const RoomsPage = () => {
           <input
             type="checkbox"
             name="readyForCheckIn"
-            checked={newRoom.readyForCheckIn}
+            checked={editRoom?.readyForCheckIn || newRoom.readyForCheckIn}
             onChange={handleChange}
           />
         </label>
         <button type="submit" disabled={actionLoading}>
-          {actionLoading ? 'Adding...' : 'Add Room'}
+          {actionLoading ? (editRoom ? 'Updating...' : 'Adding...') : editRoom ? 'Update Room' : 'Add Room'}
         </button>
+        {editRoom && (
+          <button type="button" onClick={cancelEditing} className="btn-cancel">
+            Cancel
+          </button>
+        )}
       </form>
 
-      <button onClick={deleteAllRooms} className="btn-delete-all"  style={{backgroundColor:"#AD8B3A"}} disabled={actionLoading}>
-        {actionLoading ? 'Deleting...' : 'Delete All Rooms'}
-      </button>
-
       <div className="rooms-grid">
-        {rooms.length > 0 ? (
-          rooms.map((room) => (
-            <div key={room._id} className="room-card">
-              <h3>{room.name}</h3>
-              <p><strong>Price:</strong> ${room.price}</p>
-              <p><strong>Occupancy:</strong> {room.occupancy}</p>
-              <p><strong>Amenities:</strong> {room.amenityFeature}</p>
-              <p><strong>Telephone:</strong> {room.telephone}</p>
-              <p><strong>Ready for Check-In:</strong> {room.readyForCheckIn ? "Yes" : "No"}</p>
-              <button onClick={() => deleteRoom(room._id)} className="btn-delete" disabled={actionLoading}>
-                {actionLoading ? 'Deleting...' : 'Delete Room'}
-              </button>
-              <button onClick={() => fetchRoomById(room._id)} className="btn-view">
-                View Details
-              </button>
-            </div>
-          ))
-        ) : (
-          <p>No rooms available.</p>
-        )}
+        {rooms.map((room) => (
+          <div key={room._id} className="room-card">
+            <h3>{room.name}</h3>
+            <p><strong>Price:</strong> ${room.price}</p>
+            <p><strong>Occupancy:</strong> {room.occupancy}</p>
+            <p><strong>Amenities:</strong> {room.amenityFeature}</p>
+            <p><strong>Telephone:</strong> {room.telephone}</p>
+            <p><strong>Ready for Check-In:</strong> {room.readyForCheckIn ? 'Yes' : 'No'}</p>
+            <button onClick={() => startEditing(room)} className="btn-edit" disabled={actionLoading}>
+              Edit Room
+            </button>
+            <button onClick={() => deleteRoom(room._id)} className="btn-delete" disabled={actionLoading}>
+              Delete Room
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
-  
+
 export default RoomsPage;
