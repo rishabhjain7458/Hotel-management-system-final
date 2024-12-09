@@ -33,7 +33,7 @@ class apiFeatures {
         } else {
             this.query = this.query.sort('-createdAt'); // Default sort by creation date, for example
         }
-        console.log("Query after sorting: ", this.query); // Debug log
+        console.log("Query after sorting: ", this.query);
         return this;
     }
 

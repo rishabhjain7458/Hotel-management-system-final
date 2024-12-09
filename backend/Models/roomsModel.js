@@ -1,41 +1,39 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-dotenv.config({path:"./config.env"}); // to connect config
+dotenv.config({ path: "./config.env" }); // to connect config
 const fs = require("fs");
 
-
 const roomSchema = new mongoose.Schema({
-    name:{
+    name: {
         type: String,
-        required:[true,'Name is a required field!'],
-        unique: true,
+        required: true,
     },
-    price:{
+    price: {
         type: Number,
-        required:[true,'Price is a required field']
+        required: true,
     },
-    occupancy:{
+    occupancy: {
         type: Number,
-        required:[true,'Occupancy is a required field']
+        required: true,
     },
-    amenityFeature:{
-        type: String
+    amenityFeature: {
+        type: String,
+        required: true,
     },
-    telephone:{
-        type: String
+    telephone: {
+        type: String,
+        required: true,
     },
-    readyForCheckIn:{
+    readyForCheckIn: {
         type: Boolean,
-        default:true
-    }
-},
-{
-    toJSON:{virtuals:true},
-    toObject:{virtuals:true}
-}
-)
+        required: true,
+    },
+    image: {
+        type: String, // This will store the path to the image
+    },
+});
 
-const Rooms=mongoose.model("rooms",roomSchema);
+const Rooms = mongoose.model('Rooms', roomSchema);
 
 
 module.exports = Rooms;

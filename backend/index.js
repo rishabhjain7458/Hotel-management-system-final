@@ -6,7 +6,12 @@ const mongoose = require('mongoose');
 const roomRouter = require('./Routes/roomsRouter');
 const bookingRouter = require('./Routes/bookingRouter');
 const eventRouter = require('./Routes/eventRouter');
-const authRouter = require('./Routes/authRouter'); // Ensure this path is correct
+const authRouter = require('./Routes/authRouter');
+const path = require('path');
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 
 mongoose.connect("mongodb+srv://admin:hellow9rld@mydb.efzewbx.mongodb.net/hotelTaj?retryWrites=true&w=majority&appName=myDB")
   .then((conn) => {
