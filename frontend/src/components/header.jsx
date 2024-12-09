@@ -4,22 +4,24 @@ import './../css/header.css';
 
 const Header = ({ onLogout }) => {
   const [user, setUser] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Track dropdown state
 
   useEffect(() => {
-    // Check if user data exists in localStorage
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Set user state from localStorage
-    } else {
-      setUser(null); // Ensure user is null if not found
+      setUser(JSON.parse(storedUser));
     }
-  }, []); // Runs only on component mount
+  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('user'); // Remove user data from localStorage
-    localStorage.removeItem('token'); // Remove token as well
-    setUser(null); // Update state to null after logout
-    if (onLogout) onLogout(); // Trigger any additional logout functionality if provided
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
+    if (onLogout) onLogout();
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(prevState => !prevState); // Toggle dropdown state
   };
 
   return (
@@ -35,8 +37,20 @@ const Header = ({ onLogout }) => {
               <li><Link to="/rooms">Rooms</Link></li>
               <li><Link to="/bookings">Bookings</Link></li>
               <li><Link to="/events">Events</Link></li>
-              <li>{`Welcome, ${user.name}`}</li>
-              <li><button onClick={handleLogout}>Logout</button></li>
+              <li className="profile-container" onClick={toggleDropdown}>
+                <div className="profile-icon">
+                  {user.profilePicture ? (
+                    <img src={user.profilePicture} alt="Profile" />
+                  ) : (
+                    <span className="default-icon">👤</span>
+                  )}
+                </div>
+                <div className={`profile-dropdown ${isDropdownOpen ? 'show' : ''}`}>
+                  <p><strong>{user.name}</strong></p>
+                  <p>{user.designation}</p>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              </li>
             </>
           ) : (
             <li><Link to="/login">Login</Link></li>
