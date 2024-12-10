@@ -6,7 +6,8 @@ const Signup = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    designation: 'Staff', // Default designation
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -14,7 +15,7 @@ const Signup = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -33,9 +34,9 @@ const Signup = () => {
       const response = await fetch('http://localhost:2020/users/signup', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -55,7 +56,8 @@ const Signup = () => {
           name: '',
           email: '',
           password: '',
-          confirmPassword: ''
+          confirmPassword: '',
+          designation: 'Staff',
         });
       } else {
         setError('Error in signing up: ' + (data.message || 'Please try again.'));
@@ -73,46 +75,59 @@ const Signup = () => {
         <form onSubmit={handleSubmit}>
           <div>
             <label>Name:</label>
-            <input 
-              type="text" 
-              name="name" 
-              value={formData.name} 
-              onChange={handleChange} 
-              required 
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
             />
           </div>
           <div>
             <label>Email:</label>
-            <input 
-              type="email" 
-              name="email" 
-              value={formData.email} 
-              onChange={handleChange} 
-              required 
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
             />
           </div>
           <div>
             <label>Password:</label>
-            <input 
-              type="password" 
-              name="password" 
-              value={formData.password} 
-              onChange={handleChange} 
-              required 
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
             />
           </div>
           <div>
             <label>Confirm Password:</label>
-            <input 
-              type="password" 
-              name="confirmPassword" 
-              value={formData.confirmPassword} 
-              onChange={handleChange} 
-              required 
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
             />
           </div>
+          <div>
+            <label>Designation:</label>
+            <select
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+              required
+            >
+              <option value="Staff">Staff</option>
+              <option value="Manager">Manager</option>
+              {/* Add more options as needed */}
+            </select>
+          </div>
           <button type="submit">Signup</button>
-          Already a user ? <a href="/login">Login</a>
+          Already a user? <a href="/login">Login</a>
         </form>
         {message && <p className="success-message">{message}</p>}
         {error && <p className="error-message">{error}</p>}

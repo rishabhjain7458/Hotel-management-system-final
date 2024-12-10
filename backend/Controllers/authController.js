@@ -37,7 +37,7 @@ exports.googleLogin = async (req, res, next) => {
                 email,
                 name,
                 password: 'google_oauth',
-                profilePicture: picture,
+                designation:'Staff'
             });
         }
 
