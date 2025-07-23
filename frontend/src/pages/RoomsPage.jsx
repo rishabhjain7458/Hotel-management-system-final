@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./../css/rooms.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
 const RoomsPage = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
