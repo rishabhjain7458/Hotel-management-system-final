@@ -13,18 +13,18 @@ const authRouter = require("./Routes/authRouter");
 
 // --- CORE MIDDLEWARE SETUP ---
 
-// 1. CORS Configuration: This MUST come first.
-// This allows your frontend (running on localhost or Vercel) to make requests to this backend.
-app.use(
-  cors({
-    origin: "*", // Allows all origins. For production, you can restrict this to your frontend's domain.
-  })
-);
+// 1. Explicitly handle preflight (OPTIONS) requests.
+// This is a robust way to ensure the browser's security check passes.
+app.options("*", cors()); // This enables pre-flight across-the-board.
 
-// 2. Body Parser for JSON
+// 2. Main CORS Configuration
+// This allows your frontend to make requests to this backend.
+app.use(cors());
+
+// 3. Body Parser for JSON
 app.use(express.json());
 
-// 3. Serve static files from the 'uploads' directory
+// 4. Serve static files from the 'uploads' directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // --- DATABASE CONNECTION ---
