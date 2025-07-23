@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./../css/bookings.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
 const BookingsPage = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +22,7 @@ const BookingsPage = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch("http://localhost:2020/bookings");
+      const response = await fetch(`${apiUrl}/bookings`);
       if (!response.ok) throw new Error("Failed to fetch bookings");
       const data = await response.json();
       setBookings(data.data.bookings);
@@ -34,7 +35,7 @@ const BookingsPage = () => {
 
   const fetchAvailableRooms = async () => {
     try {
-      const response = await fetch("http://localhost:2020/rooms");
+      const response = await fetch(`${apiUrl}/rooms`);
       if (!response.ok) throw new Error("Failed to fetch rooms");
       const data = await response.json();
       const roomsReadyForCheckIn = data.data.rooms.filter(
@@ -58,7 +59,7 @@ const BookingsPage = () => {
     e.preventDefault();
     console.log("New Booking Data:", newBooking); // Log the new booking data
     try {
-      const response = await fetch("http://localhost:2020/bookings", {
+      const response = await fetch(`${apiUrl}/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,12 +86,9 @@ const BookingsPage = () => {
 
   const deleteBooking = async (bookingId) => {
     try {
-      const response = await fetch(
-        `http://localhost:2020/bookings/${bookingId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`${apiUrl}/bookings/${bookingId}`, {
+        method: "DELETE",
+      });
       if (!response.ok) throw new Error("Failed to delete booking");
       fetchBookings(); // Refresh the bookings list after deletion
       alert("Booking deleted successfully.");
@@ -101,7 +99,7 @@ const BookingsPage = () => {
 
   const deleteAllBookings = async () => {
     try {
-      const response = await fetch("http://localhost:2020/bookings", {
+      const response = await fetch(`${apiUrl}/bookings`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete bookings");

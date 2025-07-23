@@ -10,6 +10,8 @@ const images = [
   'https://media.istockphoto.com/id/1390233984/photo/modern-luxury-bedroom.jpg?s=612x612&w=0&k=20&c=po91poqYoQTbHUpO1LD1HcxCFZVpRG-loAMWZT7YRe4='
 ];
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const HomePage = () => {
   const [currentImage, setCurrentImage] = useState(0);
 

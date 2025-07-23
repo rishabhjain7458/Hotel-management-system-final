@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import "./../css/login.css";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const Login = ({ onLogin }) => {
   const [formData, setFormData] = useState({
     email: "",
@@ -23,7 +23,7 @@ const Login = ({ onLogin }) => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:2020/users/login", {
+      const response = await fetch(`${apiUrl}/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +58,7 @@ const Login = ({ onLogin }) => {
     try {
       const googleToken = response.credential; // Google-provided credential
       const backendResponse = await fetch(
-        "http://localhost:2020/users/google-login",
+        `${apiUrl}/users/google-login`,
         {
           method: "POST",
           headers: {

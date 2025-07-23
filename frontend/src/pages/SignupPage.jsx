@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import './../css/signup.css';
+import React, { useState } from "react";
+import "./../css/signup.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
 const Signup = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    designation: 'Staff', // Default designation
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    designation: "Staff", // Default designation
   });
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -21,20 +22,20 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
-    setError('');
+    setMessage("");
+    setError("");
 
     // Validate password confirmation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:2020/users/signup', {
-        method: 'POST',
+      const response = await fetch(`${apiUrl}/users/signup`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -46,25 +47,27 @@ const Signup = () => {
 
       const data = await response.json();
 
-      if (data.status === 'success') {
-        setMessage('Signed up successfully!');
+      if (data.status === "success") {
+        setMessage("Signed up successfully!");
         setTimeout(() => {
-          window.location.href = '/login';
+          window.location.href = "/login";
         }, 2000);
         // Optionally clear the form fields after success
         setFormData({
-          name: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          designation: 'Staff',
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          designation: "Staff",
         });
       } else {
-        setError('Error in signing up: ' + (data.message || 'Please try again.'));
+        setError(
+          "Error in signing up: " + (data.message || "Please try again.")
+        );
       }
     } catch (error) {
-      console.error('Signup error:', error);
-      setError('Network error: ' + error.message);
+      console.error("Signup error:", error);
+      setError("Network error: " + error.message);
     }
   };
 

@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import './../css/events.css';
+import React, { useState, useEffect } from "react";
+import "./../css/events.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newEvent, setNewEvent] = useState({
-    name: '',
-    hall: '',
-    date: '',
+    name: "",
+    hall: "",
+    date: "",
     paidFor: false,
   });
   const [actionLoading, setActionLoading] = useState(false);
   const [filters, setFilters] = useState({
-    sort: '',
-    date: '',
+    sort: "",
+    date: "",
   });
 
   // Fetch events with filters applied
-  const fetchEvents = async (query = '') => {
+  const fetchEvents = async (query = "") => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:2020/events?${query}`);
+      const response = await fetch(`${apiUrl}/events?${query}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch events');
+        throw new Error("Failed to fetch events");
       }
       const data = await response.json();
       setEvents(data); // Directly set the events as the response is an array
@@ -63,15 +64,15 @@ const EventsPage = () => {
     }
 
     // Join the query parameters and fetch events
-    const queryString = queryParams.join('&');
+    const queryString = queryParams.join("&");
     fetchEvents(queryString);
   };
 
   // Reset filters
   const resetFilters = () => {
     setFilters({
-      sort: '',
-      date: '',
+      sort: "",
+      date: "",
     });
     fetchEvents(); // Fetch events without filters
   };
@@ -80,7 +81,7 @@ const EventsPage = () => {
     const { name, value, type, checked } = e.target;
     setNewEvent((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -90,13 +91,13 @@ const EventsPage = () => {
 
     // Validate if the date is in a valid format
     if (isNaN(new Date(newEvent.date).getTime())) {
-      alert('Please select a valid date');
+      alert("Please select a valid date");
       setActionLoading(false);
       return;
     }
 
     // Ensure the date is in the correct format (YYYY-MM-DD)
-    const formattedDate = new Date(newEvent.date).toISOString().split('T')[0];  
+    const formattedDate = new Date(newEvent.date).toISOString().split("T")[0];
 
     const updatedEvent = {
       ...newEvent,
@@ -104,24 +105,24 @@ const EventsPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:2020/events', {
-        method: 'POST',
+      const response = await fetch(`${apiUrl}/events`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedEvent),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add new event');
+        throw new Error("Failed to add new event");
       }
       const data = await response.json();
       setEvents((prevEvents) => [...prevEvents, data]);
-      alert('Event added successfully.');
+      alert("Event added successfully.");
       setNewEvent({
-        name: '',
-        hall: '',
-        date: '',
+        name: "",
+        hall: "",
+        date: "",
         paidFor: false,
       });
     } catch (err) {
@@ -134,14 +135,16 @@ const EventsPage = () => {
   const deleteEvent = async (eventId) => {
     setActionLoading(true);
     try {
-      const response = await fetch(`http://localhost:2020/events/${eventId}`, {
-        method: 'DELETE',
+      const response = await fetch(`${apiUrl}/events/${eventId}`, {
+        method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error('Failed to delete event');
+        throw new Error("Failed to delete event");
       }
-      setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
-      alert('Event deleted successfully.');
+      setEvents((prevEvents) =>
+        prevEvents.filter((event) => event._id !== eventId)
+      );
+      alert("Event deleted successfully.");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -152,14 +155,14 @@ const EventsPage = () => {
   const deleteAllEvents = async () => {
     setActionLoading(true);
     try {
-      const response = await fetch('http://localhost:2020/events', {
-        method: 'DELETE',
+      const response = await fetch(`${apiUrl}/events`, {
+        method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error('Failed to delete all events');
+        throw new Error("Failed to delete all events");
       }
       setEvents([]);
-      alert('All events deleted successfully.');
+      alert("All events deleted successfully.");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -169,9 +172,9 @@ const EventsPage = () => {
 
   const fetchEventById = async (eventId) => {
     try {
-      const response = await fetch(`http://localhost:2020/events/${eventId}`);
+      const response = await fetch(`${apiUrl}/events/${eventId}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch event');
+        throw new Error("Failed to fetch event");
       }
       const data = await response.json();
       alert(`Event details: ${JSON.stringify(data)}`);
@@ -182,8 +185,8 @@ const EventsPage = () => {
 
   // Sort upcoming events based on date
   const sortedUpcomingEvents = events
-    .filter((event) => new Date(event.date) >= new Date())  // Filter future events
-    .sort((a, b) => new Date(a.date) - new Date(b.date));   // Sort by event date
+    .filter((event) => new Date(event.date) >= new Date()) // Filter future events
+    .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by event date
 
   if (loading) {
     return (
@@ -203,9 +206,13 @@ const EventsPage = () => {
 
       <div className="main-content">
         {/* Event Filter Form */}
-        <div className="filter-section">    
+        <div className="filter-section">
           <h3>Filter and Sort Events</h3>
-          <select name="sort" value={filters.sort} onChange={handleFilterChange}>
+          <select
+            name="sort"
+            value={filters.sort}
+            onChange={handleFilterChange}
+          >
             <option value="">Sort by</option>
             <option value="date">Date</option>
             <option value="name">Name</option>
@@ -259,12 +266,17 @@ const EventsPage = () => {
             />
           </label>
           <button type="submit" disabled={actionLoading}>
-            {actionLoading ? 'Adding...' : 'Add Event'}
+            {actionLoading ? "Adding..." : "Add Event"}
           </button>
         </form>
 
-        <button onClick={deleteAllEvents} className="btn-delete-all"  style={{backgroundColor:"#AD8B3A",marginLeft:"77vh"}} disabled={actionLoading}>
-          {actionLoading ? 'Deleting...' : 'Delete All Events'}
+        <button
+          onClick={deleteAllEvents}
+          className="btn-delete-all"
+          style={{ backgroundColor: "#AD8B3A", marginLeft: "77vh" }}
+          disabled={actionLoading}
+        >
+          {actionLoading ? "Deleting..." : "Delete All Events"}
         </button>
 
         <div className="events-grid">
@@ -272,13 +284,26 @@ const EventsPage = () => {
             events.map((event) => (
               <div key={event._id} className="event-card">
                 <h3>{event.name}</h3>
-                <p><strong>Hall:</strong> {event.hall}</p>
-                <p><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
-                <p><strong>Paid:</strong> {event.paidFor ? "Yes" : "No"}</p>
-                <button onClick={() => deleteEvent(event._id)} className="btn-delete" disabled={actionLoading}>
-                  {actionLoading ? 'Deleting...' : 'Delete Event'}
+                <p>
+                  <strong>Hall:</strong> {event.hall}
+                </p>
+                <p>
+                  <strong>Date:</strong> {new Date(event.date).toLocaleString()}
+                </p>
+                <p>
+                  <strong>Paid:</strong> {event.paidFor ? "Yes" : "No"}
+                </p>
+                <button
+                  onClick={() => deleteEvent(event._id)}
+                  className="btn-delete"
+                  disabled={actionLoading}
+                >
+                  {actionLoading ? "Deleting..." : "Delete Event"}
                 </button>
-                <button onClick={() => fetchEventById(event._id)} className="btn-view">
+                <button
+                  onClick={() => fetchEventById(event._id)}
+                  className="btn-view"
+                >
                   View Details
                 </button>
               </div>
