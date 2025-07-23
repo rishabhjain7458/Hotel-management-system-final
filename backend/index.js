@@ -1,19 +1,18 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const cors = require('cors');
+const cors = require("cors");
+require("dotenv").config();
+const mongoose = require("mongoose");
+const roomRouter = require("./Routes/roomsRouter");
+const bookingRouter = require("./Routes/bookingRouter");
+const eventRouter = require("./Routes/eventRouter");
+const authRouter = require("./Routes/authRouter");
+const path = require("path");
 
-const mongoose = require('mongoose');
-const roomRouter = require('./Routes/roomsRouter');
-const bookingRouter = require('./Routes/bookingRouter');
-const eventRouter = require('./Routes/eventRouter');
-const authRouter = require('./Routes/authRouter');
-const path = require('path');
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-
-
-mongoose.connect("mongodb+srv://admin:hellow9rld@mydb.efzewbx.mongodb.net/hotelTaj?retryWrites=true&w=majority&appName=myDB")
+mongoose
+  .connect(process.env.CONN_STR)
   .then((conn) => {
     console.log("DB Connection successful");
   })
@@ -28,5 +27,5 @@ app.use("/users", authRouter);
 
 app.use("/rooms", roomRouter);
 app.use("/bookings", bookingRouter);
-app.use("/events",eventRouter);
+app.use("/events", eventRouter);
 module.exports = app;

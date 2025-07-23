@@ -9,6 +9,7 @@
   font-family: 'Arial', sans-serif;
   background-color: #121212; /* Dark background for entire page */
   color: #e0e0e0; /* Light text color for contrast */
+  z-index: -2;
 }
 
 /* Hero Section Styles */
@@ -144,5 +145,8 @@
 
   .service {
     padding: 1rem; /* Less padding for smaller screens */
+  }
+  .profile-dropdown{
+    z-index: 2;
   }
 }

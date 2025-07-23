@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './../css/Home.css';  // Import the CSS file
+import './../css/home.css';  // Import the CSS file
 
 const images = [
   'https://i0.wp.com/theluxurytravelexpert.com/wp-content/uploads/2014/03/trump-hotel-chicago-illinois-usa.jpg',
@@ -28,9 +28,6 @@ const HomePage = () => {
       >
         <h1>Admin Dashboard</h1>
         <p>Manage hotel operations efficiently</p>
-        <Link to="/rooms" className="btn-primary">
-          Manage Rooms
-        </Link>
       </div>
       <section className="services-section">
         <h2>Admin Services</h2>
